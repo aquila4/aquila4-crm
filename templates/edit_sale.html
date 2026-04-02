@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Sale</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-lg">
+
+        <!-- Header -->
+        <div class="mb-6 text-center">
+            <h2 class="text-2xl font-bold text-gray-800">Edit Sale</h2>
+            <p class="text-sm text-gray-500">Update sale information</p>
+        </div>
+
+        <!-- Form -->
+        <form method="POST" class="space-y-4">
+
+            <!-- Client -->
+            <div>
+                <label class="text-sm text-gray-600">Client Name</label>
+                <input type="text" name="client_name" value="{{ sale.client_name }}" required
+                    class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- Amount -->
+            <div>
+                <label class="text-sm text-gray-600">Amount</label>
+                <input type="number" name="amount" value="{{ sale.amount }}" required
+                    class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- Plot -->
+            <div>
+                <label class="text-sm text-gray-600">Number of Plots</label>
+                <input type="number" name="plot_number" value="{{ sale.plot_number }}"
+                    class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- Location -->
+            <div>
+                <label class="text-sm text-gray-600">Land Location</label>
+                <input type="text" name="land_location" value="{{ sale.land_location }}"
+                    class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- Type -->
+            <div>
+                <label class="text-sm text-gray-600">Sale Type</label>
+                <select name="sale_type"
+                    class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+
+                    <option value="company" {% if sale.sale_type == "company" %}selected{% endif %}>
+                        Company
+                    </option>
+
+                    <option value="marketer" {% if sale.sale_type == "marketer" %}selected{% endif %}>
+                        Marketer
+                    </option>
+
+                </select>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex justify-between mt-6">
+
+                <a href="{{ url_for('dashboard') }}"
+                   class="bg-gray-300 px-4 py-2 rounded-lg hover:bg-gray-400">
+                   Cancel
+                </a>
+
+                <button type="submit"
+                    class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+                    Update
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</body>
+</html>

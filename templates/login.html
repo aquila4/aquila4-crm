@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | GREAT MARCY REALTY CRM</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body class="bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center min-h-screen">
+
+    <div class="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md">
+
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-blue-600">GREAT MARCY REALTY CRM</h1>
+            <p class="text-gray-500 text-sm mt-1">Welcome back! Please login</p>
+        </div>
+
+        <!-- Flash Message -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="bg-red-100 text-red-600 p-3 rounded-lg mb-4 text-sm text-center">
+                    {{ messages[0] }}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Form -->
+        <form method="POST" class="space-y-5" onsubmit="showLoader()">
+
+            <!-- Username -->
+            <div>
+                <label class="text-sm font-medium text-gray-600">Username</label>
+                <input type="text" name="username" required
+                    placeholder="Enter your username"
+                    class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- Password with toggle -->
+            <div class="relative">
+                <label class="text-sm font-medium text-gray-600">Password</label>
+                <input id="password" type="password" name="password" required
+                    placeholder="Enter your password"
+                    class="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+                <!-- Toggle Button -->
+                <button type="button" onclick="togglePassword()"
+                    class="absolute right-3 top-9 text-gray-500 text-sm">
+                    👁
+                </button>
+            </div>
+
+            <!-- Options -->
+            <div class="flex items-center justify-between text-sm">
+                <label class="flex items-center">
+                    <input type="checkbox" class="mr-2">
+                    Remember me
+                </label>
+                <a href="#" class="text-blue-600 hover:underline">Forgot password?</a>
+            </div>
+
+            <!-- Button -->
+            <button id="loginBtn" type="submit"
+                class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition duration-200 flex justify-center items-center">
+                
+                <span id="btnText">Login</span>
+
+                <!-- Loader -->
+                <svg id="loader" class="hidden animate-spin h-5 w-5 ml-2 text-white"
+                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8z"></path>
+                </svg>
+
+            </button>
+
+        </form>
+
+        <!-- Footer -->
+        <p class="text-center text-xs text-gray-400 mt-6">
+            © 2026 GREAT MARCY REALTY CRM. All rights reserved.
+        </p>
+
+    </div>
+
+    <!-- JS -->
+    <script>
+        function togglePassword() {
+            const password = document.getElementById("password");
+            password.type = password.type === "password" ? "text" : "password";
+        }
+
+        function showLoader() {
+            document.getElementById("btnText").innerText = "Logging in...";
+            document.getElementById("loader").classList.remove("hidden");
+        }
+    </script>
+
+</body>
+</html>

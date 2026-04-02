@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body class="bg-gray-100">
+
+<div class="flex min-h-screen">
+
+<!-- Sidebar -->
+<div class="w-64 bg-blue-700 text-white p-5 hidden md:block">
+    <h2 class="text-2xl font-bold mb-6">GREAT MARCY REALTY CRM</h2>
+
+    <a href="{{ url_for('dashboard') }}" class="block mb-2 bg-blue-800 p-2 rounded">Dashboard</a>
+    <a href="{{ url_for('add_sale') }}" class="block mb-2 hover:bg-blue-600 p-2 rounded">Add Sale</a>
+    <a href="{{ url_for('logout') }}" class="block hover:bg-red-500 p-2 rounded">Logout</a>
+</div>
+
+<!-- Main -->
+<div class="flex-1 p-6">
+
+<!-- Top -->
+<div class="flex justify-between mb-4">
+    <h1 class="text-2xl font-bold">Dashboard</h1>
+</div>
+
+<!-- Search -->
+<form method="GET" class="mb-4">
+    <input type="text" name="search" value="{{ search }}"
+        placeholder="Search client..."
+        class="border p-2 rounded w-64">
+    <button class="bg-blue-600 text-white px-3 py-2 rounded">Search</button>
+</form>
+
+<!-- Cards -->
+<div class="grid grid-cols-2 gap-4 mb-6">
+    <div class="bg-white p-4 rounded shadow">
+        <h4>Total Sales</h4>
+        <h2 class="text-xl font-bold text-blue-600">{{ total_sales }}</h2>
+    </div>
+
+    <div class="bg-white p-4 rounded shadow">
+        <h4>Total Commission</h4>
+        <h2 class="text-xl font-bold text-green-600">{{ total_commission }}</h2>
+    </div>
+</div>
+
+<!-- Chart -->
+<div class="bg-white p-4 rounded shadow mb-6">
+    <canvas id="chart"></canvas>
+</div>
+
+<!-- Table -->
+<div class="bg-white p-4 rounded shadow overflow-x-auto">
+<table class="w-full">
+
+<thead class="border-b">
+<tr>
+    <th>Client</th>
+    <th>Amount</th>
+    <th>Type</th>
+    <th>Plots</th>
+    <th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+{% for sale in sales %}
+<tr class="border-b hover:bg-gray-50">
+
+<td>{{ sale.client_name }}</td>
+<td>₦{{ sale.amount }}</td>
+<td>{{ sale.sale_type }}</td>
+<td>{{ sale.plot_number }}</td>
+
+<td class="space-x-2">
+    <a href="{{ url_for('edit_sale', id=sale.id) }}"
+       class="bg-yellow-400 px-2 py-1 rounded text-sm">Edit</a>
+
+    <a href="{{ url_for('delete_sale', id=sale.id) }}"
+       onclick="return confirm('Delete this sale?')"
+       class="bg-red-500 text-white px-2 py-1 rounded text-sm">Delete</a>
+</td>
+
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+</div>
+
+</div>
+</div>
+
+<!-- Chart Script -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const ctx = document.getElementById('chart');
+
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Sales', 'Commission'],
+                datasets: [{
+                    label: 'Overview',
+                    data: [
+                        {{ total_sales or 0 }},
+                        {{ total_commission or 0 }}
+                    ]
+                }]
+            }
+        });
+    }
+
+});
+</script>
+
+</body>
+</html>
