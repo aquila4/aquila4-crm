@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Marketers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-6">
+
+<div class="max-w-4xl mx-auto">
+
+    <h2 class="text-2xl font-bold mb-4">Marketers</h2>
+
+    <a href="{{ url_for('add_marketer') }}"
+       class="bg-blue-500 text-white px-4 py-2 rounded">
+        + Add Marketer
+    </a>
+{% for m in marketers %}
+
+<div class="bg-white p-4 rounded shadow flex justify-between items-center">
+
+    <div>
+        <h3 class="font-bold text-lg">{{ m.name }}</h3>
+        <p>{{ m.phone }}</p>
+        <p>{{ m.email }}</p>
+        <p>{{ m.full_name }}</p>
+    </div>
+
+    <div class="space-x-2">
+
+        <a href="{{ url_for('marketer_profile', id=m.id) }}"
+           class="text-blue-600">View</a>
+
+        <a href="{{ url_for('edit_marketer', id=m.id) }}"
+           class="bg-yellow-400 px-2 py-1 rounded text-sm">Edit</a>
+
+        <a href="{{ url_for('delete_marketer', id=m.id) }}"
+           onclick="return confirm('Delete this marketer?')"
+           class="bg-red-500 text-white px-2 py-1 rounded text-sm">
+           Delete
+        </a>
+
+    </div>
+
+</div>
+
+{% endfor %}
+</body>
+</html>

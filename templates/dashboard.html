@@ -18,11 +18,37 @@
 <div class="w-64 bg-blue-700 text-white p-5 hidden md:block">
     <h2 class="text-2xl font-bold mb-6">GREAT MARCY REALTY CRM</h2>
 
-    <a href="{{ url_for('dashboard') }}" class="block mb-2 bg-blue-800 p-2 rounded">Dashboard</a>
-    <a href="{{ url_for('add_sale') }}" class="block mb-2 hover:bg-blue-600 p-2 rounded">Add Sale</a>
-    <a href="{{ url_for('logout') }}" class="block hover:bg-red-500 p-2 rounded">Logout</a>
-</div>
+    <a href="{{ url_for('dashboard') }}" class="block mb-2 px-3 py-2 rounded hover:bg-blue-600">
+        Dashboard
+    </a>
 
+    <a href="{{ url_for('add_sale') }}" class="block mb-2 px-3 py-2 rounded hover:bg-blue-600">
+        Add Sale
+    </a>
+
+    <a href="{{ url_for('marketers') }}" class="block mb-2 px-3 py-2 rounded bg-purple-600 hover:bg-purple-500">
+        👥 Marketers
+    </a>
+
+    <hr class="my-4 border-blue-500">
+
+    <a href="{{ url_for('export_pdf') }}" 
+       class="block mb-2 px-3 py-2 rounded bg-blue-500 hover:bg-blue-400">
+        📄 All Sales PDF
+    </a>
+
+    <a href="{{ url_for('export_pdf', filter='month') }}" 
+       class="block mb-2 px-3 py-2 rounded bg-green-500 hover:bg-green-400">
+        📅 This Month PDF
+    </a>
+
+    <hr class="my-4 border-blue-500">
+
+    <a href="{{ url_for('logout') }}" 
+       class="block px-3 py-2 rounded bg-red-500 hover:bg-red-400">
+        Logout
+    </a>
+</div>
 <!-- Main -->
 <div class="flex-1 p-6">
 
@@ -63,10 +89,12 @@
 
 <thead class="border-b">
 <tr>
+    <th>Date</th>
     <th>Client</th>
     <th>Amount</th>
     <th>Type</th>
     <th>Plots</th>
+    <th>Marketer</th>
     <th>Action</th>
 </tr>
 </thead>
@@ -75,10 +103,13 @@
 {% for sale in sales %}
 <tr class="border-b hover:bg-gray-50">
 
+<td>{{ sale.created_at.strftime('%Y-%m-%d') if sale.created_at else '—' }}</td>
 <td>{{ sale.client_name }}</td>
 <td>₦{{ sale.amount }}</td>
-<td>{{ sale.sale_type }}</td>
+<td>{{ sale.sale_type or "—" }}</td>
 <td>{{ sale.plot_number }}</td>
+
+<td>{{ sale.marketer.name if sale.marketer else "—" }}</td>
 
 <td class="space-x-2">
     <a href="{{ url_for('edit_sale', id=sale.id) }}"
@@ -87,6 +118,7 @@
     <a href="{{ url_for('delete_sale', id=sale.id) }}"
        onclick="return confirm('Delete this sale?')"
        class="bg-red-500 text-white px-2 py-1 rounded text-sm">Delete</a>
+       
 </td>
 
 </tr>
@@ -109,14 +141,23 @@ document.addEventListener("DOMContentLoaded", function () {
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Sales', 'Commission'],
+                labels: ['Total Sales', 'Total Commission'],
                 datasets: [{
                     label: 'Overview',
                     data: [
                         {{ total_sales or 0 }},
                         {{ total_commission or 0 }}
-                    ]
+                    ],
+                    borderRadius: 6
                 }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
             }
         });
     }

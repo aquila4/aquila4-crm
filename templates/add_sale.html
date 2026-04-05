@@ -5,107 +5,172 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Sale</title>
 
-    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
-    <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-lg">
+<div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-lg">
 
-        <!-- Header -->
-        <div class="mb-6 text-center">
-            <h2 class="text-2xl font-bold text-gray-800">Add Sale</h2>
-            <p class="text-sm text-gray-500">Enter new sale details</p>
-        </div>
-
-        <!-- Form -->
-        <form method="POST" class="space-y-4">
-
-            <!-- Client -->
-            <div>
-                <label class="text-sm text-gray-600">Client Name</label>
-                <input type="text" name="client_name" required
-                    class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-            </div>
-
-            <!-- Amount -->
-            <div>
-                <label class="text-sm text-gray-600">Amount</label>
-                <input type="number" name="amount" step="0.01" required
-                    class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-            </div>
-
-            <!-- Plot -->
-            <div>
-                <label class="text-sm text-gray-600">Number of Plots</label>
-                <input type="number" name="plot_number"
-                    class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-            </div>
-
-            <!-- Location -->
-            <div>
-                <label class="text-sm text-gray-600">Land Location</label>
-                <input type="text" name="land_location"
-                    class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-            </div>
-
-            <!-- Marketer Name -->
-            <div>
-                <label class="text-sm text-gray-600">Marketer Name</label>
-                <input type="text" name="marketer_name"
-                    class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-            </div>
-
-            <!-- Sale Type -->
-            <div>
-                <label class="text-sm text-gray-600">Sale Type</label>
-                <select name="sale_type" required
-                    class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-
-                    <option value="">Select Sale Type</option>
-                    <option value="company">Company</option>
-                    <option value="marketer">Marketer</option>
-
-                </select>
-            </div>
-
-            <!-- Live Commission Preview -->
-            <div class="bg-gray-50 p-3 rounded-lg">
-                <p class="text-sm text-gray-600">Estimated Commission:</p>
-                <p id="commissionPreview" class="text-lg font-bold text-green-600">₦0</p>
-            </div>
-
-            <!-- Buttons -->
-            <div class="flex justify-between mt-6">
-
-                <a href="{{ url_for('dashboard') }}"
-                   class="bg-gray-300 px-4 py-2 rounded-lg hover:bg-gray-400">
-                   Cancel
-                </a>
-
-                <button type="submit"
-                    class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
-                    Add Sale
-                </button>
-
-            </div>
-
-        </form>
-
+    <!-- Header -->
+    <div class="mb-6 text-center">
+        <h2 class="text-2xl font-bold text-gray-800">Add Sale</h2>
+        <p class="text-sm text-gray-500">Enter new sale details</p>
     </div>
 
-    <!-- 🔥 JS: Live Commission -->
-    <script>
-        const plotInput = document.querySelector('[name="plot_number"]');
-        const preview = document.getElementById('commissionPreview');
+    <!-- Form -->
+    <form method="POST" class="space-y-4">
 
-        plotInput.addEventListener('input', function () {
-            let plots = parseInt(this.value) || 0;
-            let commission = plots * 20000;
-            preview.innerText = "₦" + commission.toLocaleString();
-        });
-    </script>
+        <!-- Client -->
+        <div>
+            <label class="text-sm text-gray-600">Client Name</label>
+            <input type="text" name="client_name" required
+                class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <!-- Amount -->
+        <div>
+            <label class="text-sm text-gray-600">Amount</label>
+            <input type="number" name="amount" step="0.01" required
+                class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <!-- Plot -->
+        <div>
+            <label class="text-sm text-gray-600">Number of Plots</label>
+            <input type="number" name="plot_number" id="plotInput"
+                class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <!-- Location -->
+        <div>
+            <label class="text-sm text-gray-600">Land Location</label>
+            <input type="text" name="land_location"
+                class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <!-- 🔥 SALE TYPE -->
+        <div>
+            <label class="text-sm text-gray-600">Sale Type</label>
+            <select name="sale_type" id="saleType" required
+                class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+
+                <option value="">Select Sale Type</option>
+                <option value="company">Company</option>
+                <option value="marketer">Marketer</option>
+
+            </select>
+        </div>
+
+        <!-- 🔥 MARKETER -->
+        <div id="marketerDiv">
+    <label class="text-sm text-gray-600">Marketer</label>
+    <select name="marketer_id" id="marketerSelect"
+        class="w-full mt-1 px-4 py-2 border rounded-lg">
+
+        <option value="">Select Marketer</option>
+        {% for marketer in marketers %}
+            <option value="{{ marketer.id }}">{{ marketer.full_name }}</option>
+        {% endfor %}
+
+        <div id="marketerStats" class="bg-blue-50 p-3 rounded-lg mt-2 hidden">
+    <p class="text-sm text-gray-600">Marketer Total Earnings:</p>
+    <p id="marketerTotal" class="text-lg font-bold text-blue-700">₦0</p>
+</div>
+
+    </select>
+</div>
+
+        <!-- Live Commission -->
+        <div class="bg-gray-50 p-3 rounded-lg">
+            <p class="text-sm text-gray-600">Estimated Commission:</p>
+            <p id="commissionPreview" class="text-lg font-bold text-green-600">₦0</p>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex justify-between mt-6">
+
+            <a href="{{ url_for('dashboard') }}"
+               class="bg-gray-300 px-4 py-2 rounded-lg hover:bg-gray-400">
+               Cancel
+            </a>
+
+            <button type="submit"
+                class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                Add Sale
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+const plotInput = document.getElementById('plotInput');
+const preview = document.getElementById('commissionPreview');
+
+const saleType = document.getElementById('saleType');
+const marketerDiv = document.getElementById('marketerDiv');
+const marketerSelect = document.getElementById('marketerSelect');
+const marketerStats = document.getElementById('marketerStats');
+const marketerTotal = document.getElementById('marketerTotal');
+
+// Example marketer earnings (you can replace with real API later)
+let marketerEarnings = {};
+
+// 🔥 Commission calculator
+function calculateCommission() {
+    let plots = parseInt(plotInput.value) || 0;
+    let commission = plots * 20000;
+
+    preview.innerText = "₦" + commission.toLocaleString();
+}
+
+// 🔥 Show/Hide marketer logic
+function handleSaleType() {
+    if (saleType.value === "marketer") {
+        marketerDiv.style.display = "block";
+        marketerSelect.setAttribute("required", "required");
+    } else {
+        marketerDiv.style.display = "none";
+        marketerSelect.removeAttribute("required");
+        marketerSelect.value = "";
+        marketerStats.classList.add("hidden");
+    }
+}
+
+// 🔥 Show marketer stats when selected
+marketerSelect.addEventListener('change', function () {
+    let id = this.value;
+
+    if (id && saleType.value === "marketer") {
+        marketerStats.classList.remove("hidden");
+
+        // simulate earnings (replace with real data later)
+        let total = marketerEarnings[id] || 0;
+
+        marketerTotal.innerText = "₦" + total.toLocaleString();
+    } else {
+        marketerStats.classList.add("hidden");
+    }
+});
+
+// 🔥 Events
+plotInput.addEventListener('input', calculateCommission);
+saleType.addEventListener('change', handleSaleType);
+
+// 🔥 Run on load
+calculateCommission();
+handleSaleType();
+
+
+fetch(`/marketer/${id}/stats`)
+    .then(res => res.json())
+    .then(data => {
+        marketerTotal.innerText = "₦" + data.total.toLocaleString();
+    });
+</script>
 
 </body>
 </html>
