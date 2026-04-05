@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+migrations/__pycache__/
+report.pdf
+*.db
+.env
