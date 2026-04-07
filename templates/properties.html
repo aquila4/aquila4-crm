@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Properties</title>
+</head>
+
+<body style="font-family: Arial, sans-serif; background:#f3f4f6; padding:20px;">
+
+<h2 style="
+    font-size:26px;
+    font-weight:bold;
+    margin-bottom:20px;
+">
+    🏡 All Properties
+</h2>
+
+<div style="
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap:15px;
+">
+
+    {% for property in properties %}
+
+    <div style="
+        background:#ffffff;
+        padding:15px;
+        border-radius:10px;
+        box-shadow:0 2px 8px rgba(0,0,0,0.08);
+    ">
+
+        <!-- NAME -->
+        <strong style="font-size:18px; display:block; margin-bottom:8px;">
+            {{ property.name }}
+        </strong>
+
+        <!-- LOCATION -->
+        <p style="font-size:13px; color:#666; margin-bottom:10px;">
+            📍 {{ property.location }}
+        </p>
+
+        <!-- OPTIONAL: TOTAL PLOTS -->
+        {% if property.total_plots %}
+        <p style="font-size:13px; color:#444; margin-bottom:10px;">
+            🧱 Total Plots: {{ property.total_plots }}
+        </p>
+        {% endif %}
+
+        <!-- BUTTON -->
+        <a href="{{ url_for('view_property', property_id=property.id) }}" style="
+            display:inline-block;
+            padding:8px 12px;
+            background:#2563eb;
+            color:white;
+            border-radius:6px;
+            text-decoration:none;
+            font-size:13px;
+        ">
+            View Details
+        </a>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+</body>
+</html>

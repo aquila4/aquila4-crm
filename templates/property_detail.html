@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Property Details</title>
+</head>
+
+<body style="font-family: Arial; background:#f3f4f6; padding:20px;">
+
+    <h2 style="margin-bottom:10px;">🏡 {{ property.name }}</h2>
+    <p style="color:#555;">📍 {{ property.location }}</p>
+
+    <hr>
+
+    <!-- CALCULATIONS -->
+    {% set total = plots | length %}
+    {% set sold = plots | selectattr('status', 'equalto', 'sold') | list | length %}
+    {% set available = total - sold %}
+
+    <p>🧱 Total Plots: {{ total }}</p>
+    <p>🟢 Available: {{ available }}</p>
+    <p>🔴 Sold: {{ sold }}</p>
+
+    <hr>
+
+    <h3>Plots</h3>
+
+    <div style="
+        display:grid;
+        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+        gap:8px;
+    ">
+
+        {% for plot in plots %}
+
+        <a href="{{ url_for('sell_plot', plot_id=plot.id) }}" style="text-decoration:none;">
+
+            <div style="
+                padding:10px;
+                text-align:center;
+                border-radius:6px;
+                background: {{ 'red' if plot.status == 'sold' else 'green' }};
+                color:white;
+                font-size:12px;
+                cursor:pointer;
+            ">
+                {{ plot.plot_number }}
+            </div>
+
+        </a>
+
+        {% endfor %}
+
+    </div>
+
+    <br><br>
+
+    <a href="{{ url_for('dashboard_2') }}" style="
+        display:inline-block;
+        padding:10px 15px;
+        background:#2563eb;
+        color:white;
+        text-decoration:none;
+        border-radius:6px;
+    ">
+    <a href="{{ url_for('add_plots', property_id=property.id, count=10) }}" style="
+    display:inline-block;
+    padding:10px 15px;
+    background:#16a34a;
+    color:white;
+    text-decoration:none;
+    border-radius:6px;
+    margin-top:10px;
+">
+    ➕ Add 10 Plots
+</a>
+
+<a href="/property/{{ property.id }}/sell/10" 
+   style="
+   display:inline-block;
+   margin-top:15px;
+   padding:10px 15px;
+   background:#dc2626;
+   color:white;
+   border-radius:6px;
+   text-decoration:none;
+   ">
+   Sell 10 Plots
+</a>
+
+        ← Back to Dashboard
+    </a>
+
+</body>
+</html>

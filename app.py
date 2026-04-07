@@ -1,8 +1,9 @@
 from datetime import datetime
+from itertools import count
 
 from flask import Flask, render_template, redirect, url_for, request, flash, send_file
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from models import db, User, Sale, Commission, Marketer, Notification
+from models import Plot, db, User, Sale, Commission, Marketer, Notification, Property
 from config import Config
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
@@ -378,8 +379,165 @@ def marketer_pdf(id):
         mimetype='application/pdf'
     )
 
+def create_plots(property_obj):
+    total = property_obj.rows * property_obj.columns
+
+    plots = []
+    for i in range(1, total + 1):
+        plot = Plot(
+            property_id=property_obj.id,
+            plot_number=i,
+            status="available"
+        )
+        plots.append(plot)
+
+    db.session.add_all(plots)
+    db.session.commit()
+
+    
+@app.route("/property/new", methods=["GET", "POST"])
+def new_property():
+    if request.method == "POST":
+        name = request.form.get("name")
+        location = request.form.get("location")
+        rows = request.form.get("rows", type=int)
+        columns = request.form.get("columns", type=int)
+
+        # ✅ validation inside the function
+        if not rows or not columns or rows <= 0 or columns <= 0:
+            return "Invalid rows or columns"
+
+        total_plots = rows * columns
+
+        new_property = Property(
+            name=name,
+            location=location,
+            rows=rows,
+            columns=columns,
+            total_plots=total_plots
+        )
+
+        db.session.add(new_property)
+        db.session.commit()
+
+        create_plots(new_property)
+
+        return "Property created successfully with plots!"
+
+    return render_template("create_property.html")
+
+@app.route("/plot/<int:plot_id>/toggle")
+def update_plot_status(plot_id):
+    plot = Plot.query.get_or_404(plot_id)
+
+    if plot.status == "available":
+        plot.status = "sold"
+    else:
+        plot.status = "available"
+
+    db.session.commit()
+
+    return redirect(request.referrer)
+
+
+@app.route("/property/<int:property_id>")
+def view_property(property_id):
+    property_obj = Property.query.get_or_404(property_id)
+
+    plots = Plot.query.filter_by(property_id=property_id).all()
+
+    print("Plots found:", len(plots))  # DEBUG
+
+    return render_template(
+        "property_detail.html",
+        property=property_obj,
+        plots=plots
+    )
+
+
+
+
+
+
+@app.route("/dashboard-2")
+def dashboard_2():
+    properties = Property.query.all()
+    return render_template("properties.html", properties=properties)
+
+@app.route("/plot/<int:plot_id>/sell")
+def sell_plot(plot_id):
+    plot = Plot.query.get_or_404(plot_id)
+
+    plot.status = "sold"
+    db.session.commit()
+
+    return redirect(request.referrer or url_for("dashboard_2"))
+
+@app.route("/add-plots/<int:property_id>/<int:count>")
+def add_plots(property_id, count):
+    property_obj = Property.query.get_or_404(property_id)
+
+    existing = Plot.query.filter_by(property_id=property_id).count()
+
+    for i in range(existing + 1, existing + count + 1):
+        plot = Plot(
+            property_id=property_id,
+            plot_number=i,
+            status="available"
+        )
+        db.session.add(plot)
+
+    db.session.commit()
+
+    return f"{count} plots added successfully!"
+
+
+@app.route("/property/<int:property_id>/sell/<int:count>")
+def sell_plots(property_id, count):
+    plots = Plot.query.filter_by(
+        property_id=property_id,
+        status="available"
+    ).limit(count).all()
+
+    for plot in plots:
+        plot.status = "sold"
+
+    db.session.commit()
+
+    return redirect(url_for("view_property", property_id=property_id))
+
+# ✏️ Edit Property
+@app.route("/property/<int:property_id>/edit", methods=["GET", "POST"])
+def edit_property(property_id):
+    property_obj = Property.query.get_or_404(property_id)
+
+    if request.method == "POST":
+        property_obj.name = request.form.get("name")
+        property_obj.location = request.form.get("location")
+
+        db.session.commit()
+        return redirect(url_for("view_property", property_id=property_id))
+
+    return render_template("edit_property.html", property=property_obj)
+
+
+# 🗑️ Delete Property
+@app.route("/property/<int:property_id>/delete")
+def delete_property(property_id):
+    property_obj = Property.query.get_or_404(property_id)
+
+    # delete plots first
+    Plot.query.filter_by(property_id=property_id).delete()
+
+    db.session.delete(property_obj)
+    db.session.commit()
+
+    return redirect(url_for("dashboard"))
+
+
 # =========================
 # EXPORT PDF
+
 # =========================
 
 @app.route("/export/pdf")
