@@ -7,6 +7,8 @@ from models import Plot, db, User, Sale, Commission, Marketer, Notification, Pro
 from config import Config
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
+import os
+from werkzeug.security import generate_password_hash
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
 from reportlab.lib import colors
@@ -599,13 +601,17 @@ def export_pdf():
 # =========================
 # DEFAULT ADMIN
 # =========================
+
 with app.app_context():
     if not User.query.filter_by(username="admin").first():
         admin = User(
             username="admin",
-            password=generate_password_hash("admin123"),
+            password=generate_password_hash(
+                os.getenv("ADMIN_PASSWORD")
+            ),
             role="admin"
         )
+
         db.session.add(admin)
         db.session.commit()
         print("Admin created")

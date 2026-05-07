@@ -1,6 +1,6 @@
 import os
 
 class Config:
-    SECRET_KEY = "supersecretkey"
-    SQLALCHEMY_DATABASE_URI = "postgresql://postgres:IQgcrwOKpdDPYokDWYWzWhXxeputfxbv@maglev.proxy.rlwy.net:42223/railway"
+    SECRET_KEY = os.getenv("SECRET_KEY")
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
